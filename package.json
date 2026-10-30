@@ -1,0 +1,25 @@
+{
+  "name": "scad-registry",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Build a commit-pinned registry of OpenSCAD libraries.",
+  "engines": { "node": ">=22.12.0" },
+  "scripts": {
+    "validate": "tsx src/validate.ts",
+    "build": "tsx src/build.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test test/*.test.ts",
+    "check": "npm run validate && npm run typecheck && npm test && npm run build"
+  },
+  "dependencies": {
+    "semver": "^7.7.3",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.0",
+    "@types/semver": "^7.7.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}

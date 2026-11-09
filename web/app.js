@@ -53,8 +53,11 @@ function cardFor(library) {
     metadata.append(element("span", "chip chip-warn", library.sync.status === "stale" ? "Cached metadata" : "Sync unavailable"));
   }
 
-  const details = element("details", "details-panel");
-  const summary = element("summary", "", "Show details");
+  // The expandable panel follows the action row so opening it never moves
+  // the Repository link away from the Show details control.
+  const details = element("div", "details-panel");
+  details.id = "library-details-" + library.id;
+  details.hidden = true;
   const content = element("div", "details-content");
   content.append(element("p", "", library.description));
   addDetail(content, "License", library.license);
@@ -79,14 +82,26 @@ function cardFor(library) {
   } else {
     content.append(element("div", "details-label", "No indexed versions are available."));
   }
-  details.append(summary, content);
+  details.append(content);
 
   const actions = element("div", "card-actions");
-  actions.append(details);
+  const toggle = element("button", "details-toggle");
+  toggle.type = "button";
+  toggle.setAttribute("aria-controls", details.id);
+  toggle.setAttribute("aria-expanded", "false");
+  const toggleLabel = element("span", "", "Show details");
+  toggle.append(toggleLabel);
+  toggle.addEventListener("click", () => {
+    const opening = details.hidden;
+    details.hidden = !opening;
+    toggle.setAttribute("aria-expanded", String(opening));
+    toggleLabel.textContent = opening ? "Hide details" : "Show details";
+  });
+  actions.append(toggle);
   const repository = externalLink(library.repositoryUrl, "Repository ↗");
   if (repository) actions.append(repository);
 
-  card.append(heading, description, metadata, element("div", "card-divider"), actions);
+  card.append(heading, description, metadata, element("div", "card-divider"), actions, details);
   return card;
 }
 

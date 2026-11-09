@@ -4,8 +4,8 @@ Making OpenSCAD libraries easier to discover, install, and manage.
 
 The TypeScript Registry Builder enriches the curated 29-library catalog with
 installable, commit-pinned versions from GitHub and Codeberg. The generated
-`dist/registry.json` is intended for the SCAD AI IDE Library Manager and can later
-be served as a static file on GitHub Pages.
+`dist/registry.json` is intended for the SCAD AI IDE Library Manager and is
+published alongside a lightweight searchable catalog on GitHub Pages.
 
 ## Run locally
 
@@ -41,8 +41,39 @@ npm run build -- --allow-partial
 
 Paths are relative to the current working directory. Concurrency is restricted
 to 1–3 repositories, with sequential API requests within each repository.
-`dist/`, `.cache/`, and dependency directories are ignored by Git. No GitHub
-Actions or publishing configuration is introduced in this local-first phase.
+`dist/`, `.cache/`, and dependency directories are ignored by Git. GitHub Actions publishes the generated data and site together; local builds
+still work independently of the workflow.
+
+## Website and GitHub Pages
+
+The website is a single responsive page built with plain HTML, CSS and JavaScript.
+It fetches the generated registry from `./registry.json` and supports a simple
+search, expandable library metadata, and links to repositories and documentation.
+There is no client-side router or additional frontend dependency.
+
+After generating the registry locally:
+
+```sh
+npm run build
+npm run site:build
+# dist/ now contains index.html, styles.css, app.js, favicon.svg, and registry.json
+```
+
+Open `dist/index.html` using a static HTTP server (not the `file://` protocol,
+because the page uses `fetch` to load JSON). The `site:build` command requires
+`dist/registry.json` and never modifies its contents.
+
+To publish, go to **Settings → Pages → Build and deployment → Source** and
+select **GitHub Actions**. After merging the workflow on `main`, run
+**Actions → Publish SCAD Registry → Run workflow**, or push to `main`.
+
+- Website: https://peterisdev42.github.io/scad-registry/
+- JSON: https://peterisdev42.github.io/scad-registry/registry.json
+
+The publishing workflow validates the catalog, typechecks, runs tests, fetches
+fresh GitHub/Codeberg data, validates the generated registry, and deploys
+`dist/` only when every step succeeds. Builds fail on incomplete synchronization;
+there is no automatic partial publish and no scheduled refresh.
 
 ## Catalog and output
 

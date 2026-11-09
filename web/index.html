@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Making OpenSCAD libraries easier to discover, install, and manage.">
+  <meta name="theme-color" content="#f8faf8">
+  <title>SCAD Registry — OpenSCAD Libraries</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#libraries">Skip to libraries</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="./" aria-label="SCAD Registry home">
+        <span class="brand-symbol" aria-hidden="true">
+          <svg viewBox="0 0 40 40" fill="none">
+            <path d="M20 3.5 34.3 11.75v16.5L20 36.5 5.7 28.25v-16.5L20 3.5Z" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
+            <path d="m5.9 11.9 14.1 8.2 14.1-8.2M20 20.1v16.1" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span>SCAD<span class="brand-light"> Registry</span></span>
+      </a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="#libraries">Libraries</a>
+        <a href="./registry.json" target="_blank" rel="noopener noreferrer">JSON <span class="external-mark" aria-hidden="true">↗</span></a>
+        <a href="https://github.com/peterisdev42/scad-registry" target="_blank" rel="noopener noreferrer">GitHub <span class="external-mark" aria-hidden="true">↗</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span> OPENSCAD LIBRARY REGISTRY</div>
+        <h1 id="hero-title">Better libraries.<br><span>Better designs.</span></h1>
+        <p>Making OpenSCAD libraries easier to discover, install, and manage.</p>
+        <div class="hero-meta"><span class="meta-dot" aria-hidden="true"></span> Open source <span class="meta-divider" aria-hidden="true">/</span> Curated library catalog <span class="meta-divider" aria-hidden="true">/</span> JSON-powered</div>
+      </div>
+      <div class="hero-graphic" aria-hidden="true">
+        <div class="graphic-grid"></div>
+        <div class="graphic-orbit graphic-orbit-one"></div>
+        <div class="graphic-orbit graphic-orbit-two"></div>
+        <svg class="graphic-cube" viewBox="0 0 220 220" fill="none">
+          <path d="M110 20 188 65v90l-78 45-78-45V65L110 20Z" stroke="currentColor" stroke-width="2"/>
+          <path d="m32 65 78 45 78-45M110 110v90" stroke="currentColor" stroke-width="2"/>
+          <path d="m110 48 54 31v62l-54 31-54-31V79l54-31Z" stroke="currentColor" stroke-opacity=".32" stroke-width="1.5"/>
+          <path d="m56 79 54 31 54-31M110 110v62" stroke="currentColor" stroke-opacity=".32" stroke-width="1.5"/>
+          <circle cx="110" cy="20" r="5" fill="currentColor"/><circle cx="188" cy="155" r="5" fill="currentColor"/><circle cx="32" cy="155" r="5" fill="currentColor"/>
+        </svg>
+        <span class="graphic-caption">OPENSCAD / LIBRARIES</span>
+      </div>
+    </section>
+
+    <section class="catalog" id="libraries" aria-labelledby="catalog-heading">
+      <div class="section-topline">
+        <div>
+          <div class="section-kicker">THE COLLECTION</div>
+          <h2 id="catalog-heading">Explore libraries<span class="heading-period">.</span></h2>
+        </div>
+        <div class="catalog-meta" id="updated"></div>
+      </div>
+      <div class="catalog-toolbar">
+        <label class="search-box" for="library-search">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.9"/><path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
+          <input id="library-search" type="search" placeholder="Search libraries..." autocomplete="off" aria-label="Search libraries">
+          <kbd aria-hidden="true">/</kbd>
+        </label>
+        <span class="result-count" id="result-count" aria-live="polite">Loading catalog…</span>
+      </div>
+      <p class="status-message" id="status-message" role="status">Loading libraries…</p>
+      <div class="library-grid" id="library-grid"></div>
+      <p class="empty-state" id="empty-state" hidden>No libraries match your search.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div><strong>SCAD Registry</strong><span> — OpenSCAD library metadata, made accessible.</span></div>
+      <div class="footer-links">
+        <a href="https://openscad.org/libraries.html" target="_blank" rel="noopener noreferrer">OpenSCAD</a>
+        <a href="./registry.json" target="_blank" rel="noopener noreferrer">Registry JSON</a>
+        <a href="https://github.com/peterisdev42/scad-registry" target="_blank" rel="noopener noreferrer">Source</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

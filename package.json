@@ -4,10 +4,13 @@
   "private": true,
   "type": "module",
   "description": "Build a commit-pinned registry of OpenSCAD libraries.",
-  "engines": { "node": ">=22.12.0" },
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "validate": "tsx src/validate.ts",
     "build": "tsx src/build.ts",
+    "site:build": "tsx src/build-site.ts",
     "typecheck": "tsc --noEmit",
     "test": "tsx --test test/*.test.ts",
     "check": "npm run validate && npm run typecheck && npm test && npm run build"

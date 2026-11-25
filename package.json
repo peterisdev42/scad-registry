@@ -10,7 +10,7 @@
   "scripts": {
     "validate": "tsx src/validate.ts",
     "build": "tsx src/build.ts",
-    "site:build": "tsx src/build-site.ts",
+    "site:build": "npm install --prefix .cache/pages-fonts --no-save --package-lock=false --ignore-scripts --no-audit --no-fund geist@1.4.2 && tsx src/build-site.ts",
     "typecheck": "tsc --noEmit",
     "test": "tsx --test test/*.test.ts",
     "check": "npm run validate && npm run typecheck && npm test && npm run build"

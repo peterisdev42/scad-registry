@@ -55,6 +55,22 @@ jobs:
       - name: Build static website
         run: npm run site:build
 
+      - name: Install browser validation tools
+        run: |
+          npm install --prefix .cache/pages-browser --no-save --package-lock=false --ignore-scripts --no-audit --no-fund playwright@1.61.1
+          node .cache/pages-browser/node_modules/playwright/cli.js install --with-deps chromium
+
+      - name: Validate published website in Chromium
+        run: node --test test/pages.browser.mjs
+
+      - name: Upload browser screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: registry-website-screenshots
+          path: registry-*.png
+          if-no-files-found: ignore
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 

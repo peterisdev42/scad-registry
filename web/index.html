@@ -1,64 +1,60 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Making OpenSCAD libraries easier to discover, install, and manage.">
-  <meta name="theme-color" content="#fff9fb">
-  <title>SCAD Registry — OpenSCAD Libraries</title>
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="Making OpenSCAD libraries easier to discover, install, and manage. Browse commit-pinned library metadata for SCAD AI IDE and other tools.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="SCAD Registry — OpenSCAD Libraries">
+  <meta property="og:url" content="https://peterisdev42.github.io/scad-registry/">
+  <link rel="canonical" href="https://peterisdev42.github.io/scad-registry/">
   <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  <script src="./geist/theme.js"></script>
+  <link rel="preload" href="./assets/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="./geist/index.css">
   <link rel="stylesheet" href="./styles.css">
   <script type="module" src="./app.js"></script>
+  <title>SCAD Registry — OpenSCAD Libraries</title>
 </head>
 <body>
   <a class="skip-link" href="#libraries">Skip to libraries</a>
   <header class="site-header">
-    <div class="container header-inner">
-      <a class="brand" href="./" aria-label="SCAD Registry home">
-        <span class="brand-symbol" aria-hidden="true">
-          <svg viewBox="0 0 40 40" fill="none">
-            <path d="M20 3.5 34.3 11.75v16.5L20 36.5 5.7 28.25v-16.5L20 3.5Z" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
-            <path d="m5.9 11.9 14.1 8.2 14.1-8.2M20 20.1v16.1" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
-          </svg>
-        </span>
-        <span>SCAD<span class="brand-light"> Registry</span></span>
+    <div class="container nav-shell">
+      <a class="brand" href="#top" aria-label="SCAD Registry home">
+        <img class="brand-symbol" src="./favicon.svg" alt="" width="32" height="32">
+        <span>SCAD <strong>Registry</strong></span>
       </a>
-      <nav class="nav-links" aria-label="Main navigation">
-        <a href="#libraries">Libraries</a>
-        <a href="./registry.json" target="_blank" rel="noopener noreferrer">JSON <span class="external-mark" aria-hidden="true">↗</span></a>
-        <a href="https://github.com/peterisdev42/scad-registry" target="_blank" rel="noopener noreferrer">GitHub <span class="external-mark" aria-hidden="true">↗</span></a>
-      </nav>
+      <nav class="main-nav" aria-label="Primary navigation"><a href="#libraries">Libraries</a><a href="./registry.json">Registry JSON</a><a href="https://peterisdev42.github.io/scad-ai-ide/">SCAD AI IDE</a></nav>
+      <div class="nav-actions">
+        <button class="geist-button geist-button--icon geist-theme-switcher" type="button" data-theme-toggle hidden aria-label="Switch to dark theme" title="Switch to dark theme">
+          <svg class="geist-icon theme-sun" aria-hidden="true" focusable="false"><use href="./geist/icons.svg#sun"/></svg>
+          <svg class="geist-icon theme-moon" aria-hidden="true" focusable="false"><use href="./geist/icons.svg#moon"/></svg>
+        </button>
+        <a class="geist-button nav-github" href="https://github.com/peterisdev42/scad-registry" target="_blank" rel="noopener noreferrer" aria-label="SCAD Registry on GitHub">
+          <svg class="geist-icon" aria-hidden="true" focusable="false"><use href="./geist/icons.svg#github"/></svg>
+          <span>GitHub</span>
+        </a>
+      </div>
     </div>
   </header>
-
-  <main class="container">
-    <section class="hero" aria-labelledby="hero-title">
+  <main id="main" tabindex="-1" class="container page-grid">
+    <section class="hero-section geist-guides" id="top" aria-labelledby="hero-title">
       <div class="hero-copy">
-        <div class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span> OPENSCAD LIBRARY REGISTRY</div>
-        <h1 id="hero-title">Better libraries.<br><span>Better designs.</span></h1>
-        <p>Making OpenSCAD libraries easier to discover, install, and manage.</p>
-        <div class="hero-meta"><span class="meta-dot" aria-hidden="true"></span> Open source <span class="meta-divider" aria-hidden="true">/</span> Curated library catalog <span class="meta-divider" aria-hidden="true">/</span> JSON-powered</div>
-      </div>
-      <div class="hero-graphic" aria-hidden="true">
-        <div class="graphic-grid"></div>
-        <div class="graphic-orbit graphic-orbit-one"></div>
-        <div class="graphic-orbit graphic-orbit-two"></div>
-        <svg class="graphic-cube" viewBox="0 0 220 220" fill="none">
-          <path d="M110 20 188 65v90l-78 45-78-45V65L110 20Z" stroke="currentColor" stroke-width="2"/>
-          <path d="m32 65 78 45 78-45M110 110v90" stroke="currentColor" stroke-width="2"/>
-          <path d="m110 48 54 31v62l-54 31-54-31V79l54-31Z" stroke="currentColor" stroke-opacity=".32" stroke-width="1.5"/>
-          <path d="m56 79 54 31 54-31M110 110v62" stroke="currentColor" stroke-opacity=".32" stroke-width="1.5"/>
-          <circle cx="110" cy="20" r="5" fill="currentColor"/><circle cx="188" cy="155" r="5" fill="currentColor"/><circle cx="32" cy="155" r="5" fill="currentColor"/>
-        </svg>
-        <span class="graphic-caption">OPENSCAD / LIBRARIES</span>
+        <span class="eyebrow">OPEN SOURCE / OPENSCAD LIBRARIES / JSON POWERED</span>
+        <h1 id="hero-title">Better libraries.<br>Better designs.</h1>
+        <p class="hero-lead">Discover OpenSCAD libraries.</p>
+        <p class="hero-detail">Making OpenSCAD libraries easier to discover, install, and manage. Browse the curated catalog, inspect versions and access commit-pinned metadata.</p>
+        <div class="hero-ctas"><a class="geist-button geist-button--primary geist-button--text" href="#libraries">Explore libraries</a><a class="geist-button geist-button--text" href="https://peterisdev42.github.io/scad-ai-ide/">SCAD AI IDE</a></div>
+        <p class="qualification">Open source · Curated library catalog · JSON-powered</p>
       </div>
     </section>
-
-    <section class="catalog" id="libraries" aria-labelledby="catalog-heading">
-      <div class="section-topline">
+    <section class="chapter catalog" id="libraries" aria-labelledby="catalog-heading">
+      <div class="chapter-heading section-topline">
         <div>
-          <div class="section-kicker">THE COLLECTION</div>
-          <h2 id="catalog-heading">Explore libraries<span class="heading-period">.</span></h2>
+          <div class="eyebrow">THE COLLECTION</div>
+          <h2 id="catalog-heading">Explore libraries.</h2>
         </div>
         <div class="catalog-meta" id="updated"></div>
       </div>
@@ -74,17 +70,12 @@
       <div class="library-grid" id="library-grid"></div>
       <p class="empty-state" id="empty-state" hidden>No libraries match your search.</p>
     </section>
+    <section class="chapter" id="integration">
+      <div class="chapter-heading"><span class="eyebrow">DEVELOPMENT WORKFLOW</span><h2>From discovery to your workspace.</h2><p>SCAD Registry supplies version metadata to the SCAD AI IDE Library Manager. Discover libraries, select exact tags or snapshots and restore project dependencies in VS Code.</p><a class="text-link" href="https://peterisdev42.github.io/scad-ai-ide/#library-management">Explore library management in SCAD AI IDE</a></div>
+      <div class="three-grid"><article><h3>Discover</h3><p>Browse curated OpenSCAD library descriptions, licenses and upstream documentation.</p></article><article><h3>Resolve</h3><p>Use indexed tags or snapshots with commit-pinned download URLs.</p></article><article><h3>Install</h3><p>Manage project dependencies through SCAD AI IDE. The Registry itself does not install software.</p></article></div>
+    </section>
+    <section class="chapter closing" id="open-source"><h2>Build with OpenSCAD.</h2><p>Independent, open source and built for the OpenSCAD community.</p><a class="geist-button geist-button--primary geist-button--text" href="https://peterisdev42.github.io/scad-ai-ide/">Explore SCAD AI IDE</a></section>
   </main>
-
-  <footer class="site-footer">
-    <div class="container footer-inner">
-      <div><strong>SCAD Registry</strong><span> — OpenSCAD library metadata, made accessible.</span></div>
-      <div class="footer-links">
-        <a href="https://openscad.org/libraries.html" target="_blank" rel="noopener noreferrer">OpenSCAD</a>
-        <a href="./registry.json" target="_blank" rel="noopener noreferrer">Registry JSON</a>
-        <a href="https://github.com/peterisdev42/scad-registry" target="_blank" rel="noopener noreferrer">Source</a>
-      </div>
-    </div>
-  </footer>
+  <footer class="site-footer"><div class="container footer-inner"><strong>SCAD Registry</strong><div class="footer-links"><a href="#libraries">Libraries</a><a href="#integration">Integration</a><a href="./registry.json">Registry JSON</a><a href="https://peterisdev42.github.io/scad-ai-ide/">SCAD AI IDE</a><a href="https://openscad.org/libraries.html">OpenSCAD</a><a href="https://github.com/peterisdev42/scad-registry">Source</a><a href="https://github.com/peterisdev42/scad-registry/blob/main/LICENSE">License</a></div><p>Independent community project · Not affiliated with OpenSCAD or Microsoft.</p></div></footer>
 </body>
 </html>

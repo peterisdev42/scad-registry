@@ -1,3 +1,9 @@
+// Match the IDE's sticky-header offset without extra space.
+const header = document.querySelector(".site-header");
+const updateHeader = () => document.documentElement.style.setProperty("--header-height", header.getBoundingClientRect().height + "px");
+updateHeader();
+if ("ResizeObserver" in window) new ResizeObserver(updateHeader).observe(header);
+else window.addEventListener("resize", updateHeader);
 const searchInput = document.querySelector("#library-search");
 const grid = document.querySelector("#library-grid");
 const status = document.querySelector("#status-message");
@@ -44,13 +50,13 @@ function cardFor(library) {
 
   const description = element("p", "card-description", library.description);
   const metadata = element("div", "card-metadata");
-  metadata.append(element("span", "chip", library.license));
+  metadata.append(element("span", "geist-badge", library.license));
   if (library.latestVersion) {
-    metadata.append(element("span", "chip chip-version", library.latestVersion));
+    metadata.append(element("span", "geist-badge geist-badge--info", library.latestVersion));
   }
   metadata.append(element("span", "chip", versions.length + (versions.length === 1 ? " version" : " versions")));
   if (library.sync && library.sync.status !== "ok") {
-    metadata.append(element("span", "chip chip-warn", library.sync.status === "stale" ? "Cached metadata" : "Sync unavailable"));
+    metadata.append(element("span", "geist-badge geist-badge--warning", library.sync.status === "stale" ? "Cached metadata" : "Sync unavailable"));
   }
 
   // The expandable panel follows the action row so opening it never moves
@@ -75,9 +81,9 @@ function cardFor(library) {
     const tags = element("div", "version-tags");
     for (const version of versions.slice(0, 8)) {
       const label = version.tag || (version.kind === "snapshot" ? "Development snapshot" : "Unknown version");
-      tags.append(element("span", "version-tag", label));
+      tags.append(element("span", "geist-badge version-tag", label));
     }
-    if (versions.length > 8) tags.append(element("span", "version-tag", "+" + (versions.length - 8) + " more"));
+    if (versions.length > 8) tags.append(element("span", "geist-badge version-tag", "+" + (versions.length - 8) + " more"));
     content.append(versionTitle, tags);
   } else {
     content.append(element("div", "details-label", "No indexed versions are available."));
@@ -99,7 +105,7 @@ function cardFor(library) {
   });
   actions.append(toggle);
   const repository = externalLink(library.repositoryUrl, "Repository ↗");
-  if (repository) actions.append(repository);
+  if (repository) { repository.className = "geist-button geist-button--text"; actions.append(repository); }
 
   card.append(heading, description, metadata, element("div", "card-divider"), actions, details);
   return card;

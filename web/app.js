@@ -9,7 +9,6 @@ const grid = document.querySelector("#library-grid");
 const status = document.querySelector("#status-message");
 const empty = document.querySelector("#empty-state");
 const count = document.querySelector("#result-count");
-const updated = document.querySelector("#updated");
 let libraries = [];
 
 function element(tag, className, value) {
@@ -52,9 +51,10 @@ function cardFor(library) {
   const metadata = element("div", "card-metadata");
   metadata.append(element("span", "geist-badge", library.license));
   if (library.latestVersion) {
-    metadata.append(element("span", "geist-badge geist-badge--info", library.latestVersion));
+    const latest = element("span", "geist-badge geist-badge--info", library.latestVersion);
+    latest.title = "Latest stable version: " + library.latestVersion;
+    metadata.append(latest);
   }
-  metadata.append(element("span", "chip", versions.length + (versions.length === 1 ? " version" : " versions")));
   if (library.sync && library.sync.status !== "ok") {
     metadata.append(element("span", "geist-badge geist-badge--warning", library.sync.status === "stale" ? "Cached metadata" : "Sync unavailable"));
   }
@@ -65,10 +65,9 @@ function cardFor(library) {
   details.id = "library-details-" + library.id;
   details.hidden = true;
   const content = element("div", "details-content");
-  content.append(element("p", "", library.description));
-  addDetail(content, "License", library.license);
+  // License and latest stable already appear in the summary badges.
+  // Expand the existing description in place; never duplicate its text.
   addDetail(content, "Default branch", library.defaultBranch);
-  if (library.latestVersion) addDetail(content, "Latest stable", library.latestVersion);
   if (library.documentationUrl) {
     const row = element("div", "details-row");
     row.append(element("span", "details-label", "Documentation"));
@@ -100,6 +99,7 @@ function cardFor(library) {
   toggle.addEventListener("click", () => {
     const opening = details.hidden;
     details.hidden = !opening;
+    card.classList.toggle("is-expanded", opening);
     toggle.setAttribute("aria-expanded", String(opening));
     toggleLabel.textContent = opening ? "Hide details" : "Show details";
   });
@@ -142,12 +142,6 @@ async function loadRegistry() {
     libraries = registry.libraries
       .slice()
       .sort((a, b) => a.name.localeCompare(b.name, "en", { sensitivity: "base" }));
-    if (registry.generatedAt && Number.isFinite(Date.parse(registry.generatedAt))) {
-      const when = new Date(registry.generatedAt);
-      updated.textContent = "Updated " + new Intl.DateTimeFormat("en", {
-        year: "numeric", month: "short", day: "numeric", timeZone: "UTC",
-      }).format(when) + " (UTC)";
-    }
     status.hidden = true;
     render();
   } catch (error) {

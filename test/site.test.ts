@@ -28,13 +28,19 @@ test('buildSite bundles shared Geist, preserves registry bytes and links to IDE'
   assert.match(html,/data-theme-toggle/);
   assert.match(html,/id="library-search"/);
   assert.match(html,/id="library-grid"/);
+  assert.doesNotMatch(html,/id="updated"|catalog-meta/);
+  const app=output.find(name=>/^app\.[a-f0-9]{16}\.js$/.test(name));
+  assert.ok(app);
+  assert.ok(html.includes('src="./'+app+'"'));
+  const script=await readFile(join(root,'dist',app),'utf8');
+  assert.doesNotMatch(script,/getElementById\("updated"\)|querySelector\("#updated"\)|updated\.textContent|versions\.length \+ \(versions\.length|content\.append\(element\("p", "", library\.description\)\)/);
   const css=output.find(name=>/^site\.[a-f0-9]{16}\.css$/.test(name));
   assert.ok(css);
   const contents=await readFile(join(root,'dist',css),'utf8');
   assert.match(contents,/\.\/assets\/fonts\/Geist-Variable\.woff2/);
   assert.doesNotMatch(contents,/@import/);
   assert.match(contents,/scroll-padding-top: var\(--header-height\)/);
-  for(const name of ['.nojekyll','app.js','favicon.svg','index.html','assets','geist']) assert.ok(output.includes(name));
+  for(const name of ['.nojekyll','favicon.svg','index.html','assets','geist']) assert.ok(output.includes(name));
   assert.equal(await readFile(join(root,'dist','assets','fonts','LICENSE.txt'),'utf8'),'fixture license');
 });
 test('buildSite refuses to publish without a generated registry', async (t) => {

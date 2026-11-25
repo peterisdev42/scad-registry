@@ -32,6 +32,24 @@ test('Registry published page: shared theme, links, catalog, search and details'
     assert.ok(await page.evaluate(()=>[...document.fonts].some(f=>f.family==='Geist'&&f.status==='loaded')));
     assert.equal(await page.locator('html').getAttribute('data-theme'),'light');
     assert.equal(await page.locator('.library-card').count(),registry.libraries.length);
+    assert.equal(await page.locator('#updated,.catalog-meta').count(),0);
+    assert.equal(await page.locator('.card-metadata .chip').count(),0);
+    assert.equal(await page.locator('.card-metadata').filter({hasText:/\b\d+ versions?\b/}).count(),0);
+    assert.equal(await page.locator('.details-content > p').count(),0);
+    const assertPairs=async(label)=>{
+      const issues=await page.evaluate(()=>{
+        const cards=[...document.querySelectorAll('.library-card')], problems=[];
+        for(let i=0;i+1<cards.length;i+=2){
+          const a=cards[i].getBoundingClientRect(),b=cards[i+1].getBoundingClientRect();
+          if(Math.abs(a.top-b.top)>1||Math.abs(a.height-b.height)>1)problems.push({pair:i/2,first:a.height,second:b.height});
+          const aa=cards[i].querySelector('.card-actions').getBoundingClientRect();
+          const ba=cards[i+1].querySelector('.card-actions').getBoundingClientRect();
+          if(Math.abs(aa.bottom-ba.bottom)>1)problems.push({pair:i/2,actions:[aa.bottom,ba.bottom]});
+        }
+        return problems;
+      });
+      assert.deepEqual(issues,[],label);
+    };
     assert.equal(await page.locator('.main-nav a[href="https://peterisdev42.github.io/scad-ai-ide/"]').count(),1);
     assert.equal(await page.locator('head link[rel="stylesheet"]').count(),1);
     for(const theme of ['light','dark']){
@@ -43,16 +61,29 @@ test('Registry published page: shared theme, links, catalog, search and details'
         assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+1),theme+' overflow at '+width);
         await page.locator('.main-nav a[href="#libraries"]').click();
         assert.ok(await page.evaluate(()=>Math.abs(document.getElementById('libraries').getBoundingClientRect().top-document.querySelector('.site-header').getBoundingClientRect().bottom)<=1),theme+' anchor alignment at '+width);
+        if(width>900)await assertPairs(theme+' collapsed pairs at '+width);
       }
       const first=page.locator('.library-card').first(), toggle=first.locator('.details-toggle');
+      const description=first.locator('.card-description');
+      const text=await description.textContent();
+      assert.equal(await description.evaluate(e=>getComputedStyle(e).webkitLineClamp),'3');
+      const neighbor=page.locator('.library-card').nth(1);
+      const neighborBefore=await neighbor.evaluate(e=>e.getBoundingClientRect().height);
       await toggle.click(); assert.equal(await toggle.getAttribute('aria-expanded'),'true');
       assert.ok(await first.locator('.details-panel').isVisible());
+      assert.equal(await description.textContent(),text);
+      assert.equal(await description.evaluate(e=>getComputedStyle(e).webkitLineClamp),'none');
+      assert.equal(await first.locator('.details-content > p').count(),0);
+      assert.ok(await neighbor.evaluate(e=>e.getBoundingClientRect().height)<=neighborBefore+1,'expanded card stretched collapsed neighbor');
       await toggle.click(); assert.equal(await toggle.getAttribute('aria-expanded'),'false');
+      assert.equal(await description.evaluate(e=>getComputedStyle(e).webkitLineClamp),'3');
+      await assertPairs(theme+' after collapse');
       await page.locator('#library-search').fill('zzzz-no-library-zzzz');
       assert.equal(await page.locator('.library-card').count(),0);
       assert.ok(await page.locator('#empty-state').isVisible());
       await page.locator('#library-search').fill('');
       assert.equal(await page.locator('.library-card').count(),registry.libraries.length);
+      await assertPairs(theme+' after search reset');
       await page.locator('.brand').click();
       await page.screenshot({path:'registry-'+theme+'.png'});
     }

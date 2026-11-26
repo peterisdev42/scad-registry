@@ -34,6 +34,9 @@ test('buildSite bundles shared Geist, preserves registry bytes and links to IDE'
   assert.ok(html.includes('src="./'+app+'"'));
   const script=await readFile(join(root,'dist',app),'utf8');
   assert.doesNotMatch(script,/getElementById\("updated"\)|querySelector\("#updated"\)|updated\.textContent|versions\.length \+ \(versions\.length|content\.append\(element\("p", "", library\.description\)\)/);
+  assert.doesNotMatch(script,/Show details|Hide details|Default branch|Available versions|details-panel|is-expanded/);
+  assert.match(script,/externalLink\(library\.documentationUrl, "Documentation"\)/);
+  assert.match(script,/externalLink\(library\.repositoryUrl, "Repository"\)/);
   const css=output.find(name=>/^site\.[a-f0-9]{16}\.css$/.test(name));
   assert.ok(css);
   const contents=await readFile(join(root,'dist',css),'utf8');

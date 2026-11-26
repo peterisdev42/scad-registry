@@ -7,7 +7,7 @@ import { chromium } from '../.cache/pages-browser/node_modules/playwright/index.
 
 const root=resolve('dist'), prefix='/scad-registry/';
 const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.woff2':'font/woff2','.json':'application/json'};
-test('Registry published page: shared theme, links, catalog, search and details', {timeout:90000}, async()=>{
+test('Registry published page: shared theme, links, static cards and search', {timeout:90000}, async()=>{
   const registry=JSON.parse(await readFile(resolve(root,'registry.json'),'utf8'));
   const server=createServer(async(req,res)=>{
     try{
@@ -35,7 +35,30 @@ test('Registry published page: shared theme, links, catalog, search and details'
     assert.equal(await page.locator('#updated,.catalog-meta').count(),0);
     assert.equal(await page.locator('.card-metadata .chip').count(),0);
     assert.equal(await page.locator('.card-metadata').filter({hasText:/\b\d+ versions?\b/}).count(),0);
-    assert.equal(await page.locator('.details-content > p').count(),0);
+    assert.equal(await page.locator('.details-toggle,.details-panel,.library-card [aria-expanded]').count(),0);
+    assert.equal(await page.locator('.library-card').filter({hasText:/Default branch|Available versions|Show details|Hide details/}).count(),0);
+    const sorted=registry.libraries.slice().sort((a,b)=>a.name.localeCompare(b.name,'en',{sensitivity:'base'}));
+    const assertCardLinks=async()=>{
+      const cards=await page.locator('.library-card').evaluateAll(nodes=>nodes.map(card=>({
+        id:card.querySelector('.card-subtitle').textContent,
+        description:card.querySelector('.card-description').textContent,
+        clamp:getComputedStyle(card.querySelector('.card-description')).webkitLineClamp,
+        links:[...card.querySelectorAll('.card-actions a')].map(a=>({label:a.textContent,href:a.href,rel:a.rel,target:a.target})),
+      })));
+      assert.equal(cards.length,sorted.length);
+      for(let i=0;i<cards.length;i++){
+        const library=sorted[i],card=cards[i];
+        assert.equal(card.id,library.id);
+        assert.equal(card.description,library.description);
+        assert.equal(card.clamp,'none');
+        const expected=[];
+        if(library.documentationUrl&&new URL(library.documentationUrl).protocol==='https:')expected.push({label:'Documentation',href:new URL(library.documentationUrl).href});
+        expected.push({label:'Repository',href:new URL(library.repositoryUrl).href});
+        assert.deepEqual(card.links.map(({label,href})=>({label,href})),expected,library.id);
+        assert.ok(card.links.every(l=>l.target==='_blank'&&l.rel==='noopener noreferrer'));
+      }
+    };
+    await assertCardLinks();
     const assertPairs=async(label)=>{
       const issues=await page.evaluate(()=>{
         const cards=[...document.querySelectorAll('.library-card')], problems=[];
@@ -61,34 +84,32 @@ test('Registry published page: shared theme, links, catalog, search and details'
         assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+1),theme+' overflow at '+width);
         await page.locator('.main-nav a[href="#libraries"]').click();
         assert.ok(await page.evaluate(()=>Math.abs(document.getElementById('libraries').getBoundingClientRect().top-document.querySelector('.site-header').getBoundingClientRect().bottom)<=1),theme+' anchor alignment at '+width);
-        if(width>900)await assertPairs(theme+' collapsed pairs at '+width);
+        if(width>900){
+          await assertPairs(theme+' pairs at '+width);
+          assert.ok(await page.evaluate(()=>[...document.querySelectorAll('.card-documentation')].every(a=>{
+            const doc=a.getBoundingClientRect(),repo=a.nextElementSibling?.getBoundingClientRect();
+            return repo&&doc.right<=repo.left+1&&Math.abs(doc.top-repo.top)<=1;
+          })),theme+' documentation left of repository at '+width);
+        }
       }
-      const first=page.locator('.library-card').first(), toggle=first.locator('.details-toggle');
-      const description=first.locator('.card-description');
-      const text=await description.textContent();
-      assert.equal(await description.evaluate(e=>getComputedStyle(e).webkitLineClamp),'3');
-      const neighbor=page.locator('.library-card').nth(1);
-      const neighborBefore=await neighbor.evaluate(e=>e.getBoundingClientRect().height);
-      await toggle.click(); assert.equal(await toggle.getAttribute('aria-expanded'),'true');
-      assert.ok(await first.locator('.details-panel').isVisible());
-      assert.equal(await description.textContent(),text);
-      assert.equal(await description.evaluate(e=>getComputedStyle(e).webkitLineClamp),'none');
-      assert.equal(await first.locator('.details-content > p').count(),0);
-      assert.ok(await neighbor.evaluate(e=>e.getBoundingClientRect().height)<=neighborBefore+1,'expanded card stretched collapsed neighbor');
-      await toggle.click(); assert.equal(await toggle.getAttribute('aria-expanded'),'false');
-      assert.equal(await description.evaluate(e=>getComputedStyle(e).webkitLineClamp),'3');
-      await assertPairs(theme+' after collapse');
       await page.locator('#library-search').fill('zzzz-no-library-zzzz');
       assert.equal(await page.locator('.library-card').count(),0);
       assert.ok(await page.locator('#empty-state').isVisible());
       await page.locator('#library-search').fill('');
       assert.equal(await page.locator('.library-card').count(),registry.libraries.length);
       await assertPairs(theme+' after search reset');
+      await assertCardLinks();
       await page.locator('.brand').click();
       await page.screenshot({path:'registry-'+theme+'.png'});
     }
     await page.reload();
     assert.equal(await page.locator('html').getAttribute('data-theme'),'dark');
     assert.deepEqual(errors,[]);
+    await page.route('**/registry.json',route=>route.fulfill({contentType:'application/json',body:JSON.stringify({...registry,libraries:[{...sorted[0],documentationUrl:null}]})}));
+    await page.reload();
+    await page.waitForFunction(()=>document.querySelector('#status-message').hidden);
+    assert.equal(await page.locator('.library-card').count(),1);
+    assert.equal(await page.locator('.card-documentation').count(),0);
+    assert.equal(await page.locator('.card-repository').count(),1);
   }finally{await browser?.close();await new Promise(r=>server.close(r))}
 });

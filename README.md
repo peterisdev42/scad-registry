@@ -48,7 +48,7 @@ still work independently of the workflow.
 
 The website is a single responsive page built with plain HTML, CSS and JavaScript.
 It fetches the generated registry from `./registry.json` and supports a simple
-search, expandable library metadata, and links to repositories and documentation.
+search, static library cards, and direct links to repositories and documentation when available. Full version and branch metadata remains in the JSON API.
 It shares the exact local Geist design tokens, components, responsive shell and theme preference with [SCAD AI IDE](https://peterisdev42.github.io/scad-ai-ide/). No client-side router, external CDN or frontend framework is required. The build stages the same pinned Geist 1.4.2 font package and publishes its original license. See [design-system provenance](web/geist/README.md).
 
 After generating the registry locally:

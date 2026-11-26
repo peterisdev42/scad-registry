@@ -19,23 +19,18 @@ function element(tag, className, value) {
 }
 
 function externalLink(url, label) {
-  if (typeof url !== "string" || !/^https:\/\//i.test(url)) return null;
+  if (typeof url !== "string") return null;
+  let parsed;
+  try { parsed = new URL(url); } catch { return null; }
+  if (parsed.protocol !== "https:") return null;
   const link = element("a", "", label);
-  link.href = url;
+  link.href = parsed.href;
   link.target = "_blank";
   link.rel = "noopener noreferrer";
   return link;
 }
 
-function addDetail(container, label, value) {
-  if (value === null || value === undefined || value === "") return;
-  const row = element("div", "details-row");
-  row.append(element("span", "details-label", label), element("span", "details-value", value));
-  container.append(row);
-}
-
 function cardFor(library) {
-  const versions = Array.isArray(library.versions) ? library.versions : [];
   const card = element("article", "library-card");
 
   const heading = element("div", "card-heading");
@@ -59,55 +54,19 @@ function cardFor(library) {
     metadata.append(element("span", "geist-badge geist-badge--warning", library.sync.status === "stale" ? "Cached metadata" : "Sync unavailable"));
   }
 
-  // The expandable panel follows the action row so opening it never moves
-  // the Repository link away from the Show details control.
-  const details = element("div", "details-panel");
-  details.id = "library-details-" + library.id;
-  details.hidden = true;
-  const content = element("div", "details-content");
-  // License and latest stable already appear in the summary badges.
-  // Expand the existing description in place; never duplicate its text.
-  addDetail(content, "Default branch", library.defaultBranch);
-  if (library.documentationUrl) {
-    const row = element("div", "details-row");
-    row.append(element("span", "details-label", "Documentation"));
-    const docs = externalLink(library.documentationUrl, "Open docs ↗");
-    if (docs) row.append(docs);
-    content.append(row);
-  }
-  if (versions.length) {
-    const versionTitle = element("div", "details-label", "Available versions");
-    const tags = element("div", "version-tags");
-    for (const version of versions.slice(0, 8)) {
-      const label = version.tag || (version.kind === "snapshot" ? "Development snapshot" : "Unknown version");
-      tags.append(element("span", "geist-badge version-tag", label));
-    }
-    if (versions.length > 8) tags.append(element("span", "geist-badge version-tag", "+" + (versions.length - 8) + " more"));
-    content.append(versionTitle, tags);
-  } else {
-    content.append(element("div", "details-label", "No indexed versions are available."));
-  }
-  details.append(content);
-
   const actions = element("div", "card-actions");
-  const toggle = element("button", "details-toggle");
-  toggle.type = "button";
-  toggle.setAttribute("aria-controls", details.id);
-  toggle.setAttribute("aria-expanded", "false");
-  const toggleLabel = element("span", "", "Show details");
-  toggle.append(toggleLabel);
-  toggle.addEventListener("click", () => {
-    const opening = details.hidden;
-    details.hidden = !opening;
-    card.classList.toggle("is-expanded", opening);
-    toggle.setAttribute("aria-expanded", String(opening));
-    toggleLabel.textContent = opening ? "Hide details" : "Show details";
-  });
-  actions.append(toggle);
-  const repository = externalLink(library.repositoryUrl, "Repository ↗");
-  if (repository) { repository.className = "geist-button geist-button--text"; actions.append(repository); }
+  const documentation = externalLink(library.documentationUrl, "Documentation");
+  if (documentation) {
+    documentation.className = "geist-button geist-button--small geist-button--text card-documentation";
+    actions.append(documentation);
+  }
+  const repository = externalLink(library.repositoryUrl, "Repository");
+  if (repository) {
+    repository.className = "geist-button geist-button--small geist-button--text card-repository";
+    actions.append(repository);
+  }
 
-  card.append(heading, description, metadata, element("div", "card-divider"), actions, details);
+  card.append(heading, description, metadata, element("div", "card-divider"), actions);
   return card;
 }
 

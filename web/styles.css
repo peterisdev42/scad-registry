@@ -61,7 +61,7 @@
 
 /* Registry catalog: use the same Geist tokens and materials. */
 [hidden] { display: none !important; }
-.text-link,.details-content a { text-decoration: underline; text-underline-offset: var(--space-4); }
+.text-link { text-decoration: underline; text-underline-offset: var(--space-4); }
 .section-topline { max-width: none; }
 .section-topline h2 { margin-bottom: 0; }
 .result-count { font: var(--label-12); color: var(--color-muted); }
@@ -80,30 +80,12 @@
 .card-title-group { min-width: 0; flex: 1; }
 .card-title { font: var(--heading-20); letter-spacing: var(--heading-20-tracking); overflow-wrap: anywhere; }
 .card-subtitle { font: var(--mono-12); color: var(--color-muted); margin-top: var(--space-4); }
-.card-description { font: var(--copy-14); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
-.library-card.is-expanded .card-description { display: block; -webkit-line-clamp: unset; overflow: visible; }
+.card-description { font: var(--copy-14); overflow-wrap: anywhere; }
 .card-metadata { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-8); margin-top: auto; }
 .card-divider { height: var(--stroke); background: var(--color-border); }
-.card-actions { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-8); }
-.details-toggle { display: inline-flex; align-items: center; gap: var(--space-8); min-height: var(--size-target); cursor: pointer; background: transparent; border: 0; color: var(--color-text); font: var(--button-14); padding: 0; }
-.details-toggle:hover { text-decoration: underline; }
-.details-toggle::after { content: ""; display: block; width: var(--space-8); height: var(--space-8); border-inline-end: var(--stroke) solid currentColor; border-block-end: var(--stroke) solid currentColor; transform: translateY(-25%) rotate(45deg); transition: transform var(--motion-standard) var(--ease-standard); }
-.details-toggle[aria-expanded="true"]::after { transform: translateY(25%) rotate(225deg); }
-.details-panel { border-top: var(--stroke) solid var(--color-border); padding-top: var(--space-16); }
-.details-content { min-width: 0; font: var(--copy-14); }
-.details-row { display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--space-8); margin-block: var(--space-12); }
-.details-label { color: var(--color-muted); }
-.details-value { font: var(--label-14); overflow-wrap: anywhere; }
-.version-tags { display: flex; flex-wrap: wrap; gap: var(--space-8); margin-top: var(--space-8); }
-.version-tag { font: var(--mono-12); overflow-wrap: anywhere; }
+.card-actions { display: flex; justify-content: flex-end; align-items: center; flex-wrap: wrap; gap: var(--space-8); }
 .status-message,.empty-state { border: var(--stroke) solid var(--color-border); border-radius: var(--radius-base); margin: 0 var(--space-40) var(--space-40); padding: var(--space-32); text-align: center; }
 .status-message.is-error { color: var(--color-danger); }
-/* On a two-column row, an expanded card must not stretch its collapsed
-   neighbor to the height of the full details panel. Default pairs stretch. */
-@media (min-width: 901px) {
-  .library-card:nth-child(odd):not(.is-expanded):has(+ .library-card.is-expanded),
-  .library-card.is-expanded:nth-child(odd) + .library-card:not(.is-expanded) { align-self: start; }
-}
 @media (max-width: 900px) { .library-grid { grid-template-columns: 1fr; } }
 @media (max-width: 680px) {
   .catalog-toolbar { align-items: start; flex-direction: column; }

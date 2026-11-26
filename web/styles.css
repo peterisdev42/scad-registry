@@ -75,15 +75,16 @@
 .library-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); align-items: stretch; gap: var(--space-16); padding: 0 var(--space-40) var(--space-40); }
 .library-card { min-width: 0; display: flex; flex-direction: column; gap: var(--space-16); border: var(--stroke) solid var(--color-border); border-radius: var(--radius-base); background: var(--color-bg); padding: var(--space-24); }
 .library-card:hover { border-color: var(--color-border-hover); }
-.card-heading { display: flex; align-items: start; gap: var(--space-12); }
-.card-icon { flex: 0 0 var(--space-40); height: var(--space-40); display: grid; place-items: center; border: var(--stroke) solid var(--color-border); border-radius: var(--radius-base); background: var(--color-surface); color: var(--color-text); font: var(--heading-20); }
-.card-title-group { min-width: 0; flex: 1; }
+.card-heading { min-width: 0; }
 .card-title { font: var(--heading-20); letter-spacing: var(--heading-20-tracking); overflow-wrap: anywhere; }
-.card-subtitle { font: var(--mono-12); color: var(--color-muted); margin-top: var(--space-4); }
+.card-subtitle { font: var(--mono-12); color: var(--color-muted); margin-top: var(--space-4); overflow-wrap: anywhere; }
 .card-description { font: var(--copy-14); overflow-wrap: anywhere; }
-.card-metadata { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-8); margin-top: auto; }
-.card-divider { height: var(--stroke); background: var(--color-border); }
-.card-actions { display: flex; justify-content: flex-end; align-items: center; flex-wrap: wrap; gap: var(--space-8); }
+.card-divider { height: var(--stroke); background: var(--color-border); margin-top: auto; }
+.card-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-8); }
+.card-metadata { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-8); min-width: 0; max-width: 100%; }
+.card-metadata .geist-badge { min-width: 0; overflow-wrap: anywhere; }
+.card-actions { display: flex; justify-content: flex-end; align-items: center; align-self: flex-end; flex-wrap: wrap; gap: var(--space-8); margin-inline-start: auto; max-width: 100%; }
+.card-actions .geist-button { display: inline-flex; align-items: center; justify-content: center; text-align: center; white-space: nowrap; }
 .status-message,.empty-state { border: var(--stroke) solid var(--color-border); border-radius: var(--radius-base); margin: 0 var(--space-40) var(--space-40); padding: var(--space-32); text-align: center; }
 .status-message.is-error { color: var(--color-danger); }
 @media (max-width: 900px) { .library-grid { grid-template-columns: 1fr; } }

@@ -35,7 +35,8 @@ test('Registry published page: shared theme, links, static cards and search', {t
     assert.equal(await page.locator('#updated,.catalog-meta').count(),0);
     assert.equal(await page.locator('.card-metadata .chip').count(),0);
     assert.equal(await page.locator('.card-metadata').filter({hasText:/\b\d+ versions?\b/}).count(),0);
-    assert.equal(await page.locator('.details-toggle,.details-panel,.library-card [aria-expanded]').count(),0);
+    assert.equal(await page.locator('.details-toggle,.details-panel,.library-card [aria-expanded],.card-icon').count(),0);
+    assert.equal(await page.locator('.card-footer > .card-metadata + .card-actions').count(),registry.libraries.length);
     assert.equal(await page.locator('.library-card').filter({hasText:/Default branch|Available versions|Show details|Hide details/}).count(),0);
     const sorted=registry.libraries.slice().sort((a,b)=>a.name.localeCompare(b.name,'en',{sensitivity:'base'}));
     const assertCardLinks=async()=>{
@@ -59,6 +60,31 @@ test('Registry published page: shared theme, links, static cards and search', {t
       }
     };
     await assertCardLinks();
+    const assertFooterLayout=async(label)=>{
+      const issues=await page.evaluate(()=>{
+        const issues=[], near=(a,b,t=1.5)=>Math.abs(a-b)<=t;
+        for(const card of document.querySelectorAll('.library-card')){
+          const footer=card.querySelector('.card-footer');
+          const metadata=card.querySelector('.card-metadata');
+          const actions=card.querySelector('.card-actions');
+          const fr=footer.getBoundingClientRect(),mr=metadata.getBoundingClientRect(),ar=actions.getBoundingClientRect();
+          const id=card.querySelector('.card-subtitle').textContent;
+          if(!near(mr.left,fr.left)||!near(ar.right,fr.right))issues.push(id+' footer edges');
+          const gap=parseFloat(getComputedStyle(footer).columnGap);
+          if(mr.width+ar.width+gap<=fr.width-1 && !near((mr.top+mr.bottom)/2,(ar.top+ar.bottom)/2,2))issues.push(id+' footer not centered on one row');
+          for(const button of actions.querySelectorAll('a')){
+            const style=getComputedStyle(button),rect=button.getBoundingClientRect();
+            const range=document.createRange();range.selectNodeContents(button);
+            const text=range.getBoundingClientRect();
+            if(style.display!=='inline-flex'||style.alignItems!=='center'||style.justifyContent!=='center'||style.textAlign!=='center')issues.push(id+' button alignment styles');
+            if(!near((rect.left+rect.right)/2,(text.left+text.right)/2,2)||!near((rect.top+rect.bottom)/2,(text.top+text.bottom)/2,3))issues.push(id+' '+button.textContent+' text not centered');
+            if(rect.left<fr.left-1||rect.right>fr.right+1)issues.push(id+' button overflow');
+          }
+        }
+        return issues;
+      });
+      assert.deepEqual(issues,[],label);
+    };
     const assertPairs=async(label)=>{
       const issues=await page.evaluate(()=>{
         const cards=[...document.querySelectorAll('.library-card')], problems=[];
@@ -84,6 +110,7 @@ test('Registry published page: shared theme, links, static cards and search', {t
         assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth+1),theme+' overflow at '+width);
         await page.locator('.main-nav a[href="#libraries"]').click();
         assert.ok(await page.evaluate(()=>Math.abs(document.getElementById('libraries').getBoundingClientRect().top-document.querySelector('.site-header').getBoundingClientRect().bottom)<=1),theme+' anchor alignment at '+width);
+        await assertFooterLayout(theme+' footer at '+width);
         if(width>900){
           await assertPairs(theme+' pairs at '+width);
           assert.ok(await page.evaluate(()=>[...document.querySelectorAll('.card-documentation')].every(a=>{
@@ -99,6 +126,7 @@ test('Registry published page: shared theme, links, static cards and search', {t
       assert.equal(await page.locator('.library-card').count(),registry.libraries.length);
       await assertPairs(theme+' after search reset');
       await assertCardLinks();
+      await assertFooterLayout(theme+' footer after search reset');
       await page.locator('.brand').click();
       await page.screenshot({path:'registry-'+theme+'.png'});
     }
@@ -111,5 +139,6 @@ test('Registry published page: shared theme, links, static cards and search', {t
     assert.equal(await page.locator('.library-card').count(),1);
     assert.equal(await page.locator('.card-documentation').count(),0);
     assert.equal(await page.locator('.card-repository').count(),1);
+    await assertFooterLayout('without documentation');
   }finally{await browser?.close();await new Promise(r=>server.close(r))}
 });

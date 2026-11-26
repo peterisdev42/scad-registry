@@ -34,13 +34,9 @@ function cardFor(library) {
   const card = element("article", "library-card");
 
   const heading = element("div", "card-heading");
-  const icon = element("div", "card-icon", (library.name || "?").trim().charAt(0).toUpperCase());
-  icon.setAttribute("aria-hidden", "true");
-  const nameGroup = element("div", "card-title-group");
   const title = element("h3", "card-title", library.name);
   const subtitle = element("div", "card-subtitle", library.id);
-  nameGroup.append(title, subtitle);
-  heading.append(icon, nameGroup);
+  heading.append(title, subtitle);
 
   const description = element("p", "card-description", library.description);
   const metadata = element("div", "card-metadata");
@@ -57,16 +53,18 @@ function cardFor(library) {
   const actions = element("div", "card-actions");
   const documentation = externalLink(library.documentationUrl, "Documentation");
   if (documentation) {
-    documentation.className = "geist-button geist-button--small geist-button--text card-documentation";
+    documentation.className = "geist-button geist-button--small card-documentation";
     actions.append(documentation);
   }
   const repository = externalLink(library.repositoryUrl, "Repository");
   if (repository) {
-    repository.className = "geist-button geist-button--small geist-button--text card-repository";
+    repository.className = "geist-button geist-button--small card-repository";
     actions.append(repository);
   }
 
-  card.append(heading, description, metadata, element("div", "card-divider"), actions);
+  const footer = element("div", "card-footer");
+  footer.append(metadata, actions);
+  card.append(heading, description, element("div", "card-divider"), footer);
   return card;
 }
 

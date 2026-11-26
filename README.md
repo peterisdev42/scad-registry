@@ -1,6 +1,8 @@
 # scad-registry
 
-Making OpenSCAD libraries easier to discover, install, and manage.
+The library catalog and commit-pinned metadata infrastructure for [SCAD AI IDE](https://peterisdev42.github.io/scad-ai-ide/), the open-source OpenSCAD development environment inside VS Code.
+
+Making OpenSCAD libraries easier to discover, install, and manage. The public JSON API is also available to other tools.
 
 The TypeScript Registry Builder enriches the curated 29-library catalog with
 installable, commit-pinned versions from GitHub and Codeberg. The generated
@@ -59,7 +61,7 @@ npm run site:build
 ```
 
 Open `dist/index.html` using a static HTTP server (not the `file://` protocol,
-because the page uses `fetch` to load JSON). The `site:build` command requires
+to reproduce deployed asset loading and navigation). The `site:build` command requires
 `dist/registry.json` and never modifies its contents.
 
 To publish, go to **Settings → Pages → Build and deployment → Source** and
@@ -75,6 +77,8 @@ fresh GitHub/Codeberg data, validates the generated registry, and deploys
 there is no automatic partial publish and no scheduled refresh.
 
 ## Search and AI discovery
+
+The discovery strategy identifies SCAD AI IDE as the main product and SCAD Registry as its supporting infrastructure. Both sites retain their own canonical URLs. Registry JSON-LD references the same SCAD AI IDE SoftwareApplication entity (`https://peterisdev42.github.io/scad-ai-ide/#application`) used on the main website. The AI guides prioritize the main product, its Library Manager, product manifest and getting-started documentation.
 
 The static build emits a canonical HTML catalog with stable library anchors,
 Dataset and ItemList JSON-LD, Open Graph metadata, a sitemap, a concise

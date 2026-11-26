@@ -52,10 +52,10 @@ rect(0,0,WIDTH,HEIGHT,BG);
 rect(53,52,1094,526,BORDER);rect(57,56,1086,518,PANEL);
 rect(90,86,14,75,BLUE);
 write('SCAD REGISTRY',133,106,11,WHITE);
-write('OPENSCAD LIBRARY CATALOG',110,251,5,SUB);
+write('OPENSCAD LIBRARIES FOR SCAD AI IDE',110,251,5,SUB);
 write('DISCOVER / RESOLVE / INSTALL',110,339,5,SOFT);
 write('COMMIT-PINNED LIBRARY METADATA',110,393,5,SOFT);
-rect(110,498,362,48,BLUE);write('OPEN SOURCE',126,509,4,color('#ffffff'));
+rect(110,498,362,48,BLUE);write('SCAD AI IDE ECOSYSTEM',126,509,2,color('#ffffff'));
 // Registry motif: abstract stacked index cards, not a product screenshot.
 for(let n=0;n<3;n++){rect(970+n*12,105+n*35,90,54,BLUE);rect(976+n*12,111+n*35,78,42,PANEL);rect(983+n*12,121+n*35,42,6,BLUE);}
 function crc32(bytes){let crc=0xffffffff;for(const b of bytes){crc^=b;for(let i=0;i<8;i++)crc=(crc>>>1)^((crc&1)?0xedb88320:0);}return(crc^0xffffffff)>>>0;}

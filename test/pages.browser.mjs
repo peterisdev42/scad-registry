@@ -143,7 +143,9 @@ test('Registry published page: shared theme, links, static cards and search', {t
     assert.equal(await noJs.locator('.library-card:visible').count(),registry.libraries.length);
     assert.equal(await noJs.locator('.card-repository').count(),registry.libraries.length);
     assert.ok(await noJs.locator('#library-search').isDisabled());
-    assert.equal(await noJs.locator('#faq details').count(),6);
+    assert.equal(await noJs.locator('#faq details').count(),8);
+    assert.equal(await noJs.locator('#scad-ai-ide').count(),1);
+    assert.equal(await noJs.locator('.hero-ctas a.geist-button--primary').first().getAttribute('href'),'https://peterisdev42.github.io/scad-ai-ide/');
     await noJs.locator('#faq summary').first().click();
     assert.ok(await noJs.locator('#faq details').first().getAttribute('open')!==null);
     for(const path of ['llms.txt','llms-full.txt','sitemap.xml','registry.json','assets/og-card.png']){

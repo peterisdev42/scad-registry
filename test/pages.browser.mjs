@@ -6,7 +6,7 @@ import test from 'node:test';
 import { chromium } from '../.cache/pages-browser/node_modules/playwright/index.mjs';
 
 const root=resolve('dist'), prefix='/scad-registry/';
-const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.woff2':'font/woff2','.json':'application/json'};
+const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.woff2':'font/woff2','.json':'application/json','.txt':'text/plain','.xml':'application/xml','.png':'image/png'};
 test('Registry published page: shared theme, links, static cards and search', {timeout:90000}, async()=>{
   const registry=JSON.parse(await readFile(resolve(root,'registry.json'),'utf8'));
   const server=createServer(async(req,res)=>{
@@ -24,10 +24,11 @@ test('Registry published page: shared theme, links, static cards and search', {t
   try{
     browser=await chromium.launch({headless:true});
     const context=await browser.newContext({viewport:{width:1440,height:960},colorScheme:'dark'});
-    const page=await context.newPage(), errors=[];
+    const page=await context.newPage(), errors=[], requests=[];
+    page.on('request',request=>requests.push(request.url()));
     page.on('pageerror',e=>errors.push(String(e)));
     await page.goto('http://127.0.0.1:'+server.address().port+prefix);
-    await page.waitForFunction(()=>document.querySelector('#status-message').hidden);
+    await page.waitForFunction(()=>!document.querySelector('#library-search').disabled);
     await page.evaluate(async()=>{await document.fonts.load('400 16px Geist');await document.fonts.load('400 13px "Geist Mono"');await document.fonts.ready});
     assert.ok(await page.evaluate(()=>[...document.fonts].some(f=>f.family==='Geist'&&f.status==='loaded')));
     assert.equal(await page.locator('html').getAttribute('data-theme'),'light');
@@ -122,7 +123,7 @@ test('Registry published page: shared theme, links, static cards and search', {t
         }
       }
       await page.locator('#library-search').fill('zzzz-no-library-zzzz');
-      assert.equal(await page.locator('.library-card').count(),0);
+      assert.equal(await page.locator('.library-card:visible').count(),0);
       assert.ok(await page.locator('#empty-state').isVisible());
       await page.locator('#library-search').fill('');
       assert.equal(await page.locator('.library-card').count(),registry.libraries.length);
@@ -135,12 +136,20 @@ test('Registry published page: shared theme, links, static cards and search', {t
     await page.reload();
     assert.equal(await page.locator('html').getAttribute('data-theme'),'dark');
     assert.deepEqual(errors,[]);
-    await page.route('**/registry.json',route=>route.fulfill({contentType:'application/json',body:JSON.stringify({...registry,libraries:[{...sorted[0],documentationUrl:null}]})}));
-    await page.reload();
-    await page.waitForFunction(()=>document.querySelector('#status-message').hidden);
-    assert.equal(await page.locator('.library-card').count(),1);
-    assert.equal(await page.locator('.card-documentation').count(),0);
-    assert.equal(await page.locator('.card-repository').count(),1);
-    await assertFooterLayout('without documentation');
+    assert.ok(!requests.some(url=>url.endsWith('/registry.json')),'catalog must not require runtime JSON fetch');
+    const plain=await browser.newContext({javaScriptEnabled:false});
+    const noJs=await plain.newPage();
+    await noJs.goto('http://127.0.0.1:'+server.address().port+prefix);
+    assert.equal(await noJs.locator('.library-card:visible').count(),registry.libraries.length);
+    assert.equal(await noJs.locator('.card-repository').count(),registry.libraries.length);
+    assert.ok(await noJs.locator('#library-search').isDisabled());
+    assert.equal(await noJs.locator('#faq details').count(),6);
+    await noJs.locator('#faq summary').first().click();
+    assert.ok(await noJs.locator('#faq details').first().getAttribute('open')!==null);
+    for(const path of ['llms.txt','llms-full.txt','sitemap.xml','registry.json','assets/og-card.png']){
+      const response=await plain.request.get('http://127.0.0.1:'+server.address().port+prefix+path);
+      assert.equal(response.status(),200,path);
+    }
+    await plain.close();
   }finally{await browser?.close();await new Promise(r=>server.close(r))}
 });

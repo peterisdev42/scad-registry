@@ -47,8 +47,7 @@ still work independently of the workflow.
 ## Website and GitHub Pages
 
 The website is a single responsive page built with plain HTML, CSS and JavaScript.
-It fetches the generated registry from `./registry.json` and supports a simple
-search, static library cards, and direct links to repositories and documentation when available. Full version and branch metadata remains in the JSON API.
+The build renders the entire validated registry into static HTML, using the exact same `dist/registry.json` published for machine consumers. The browser only filters existing cards; no JSON request or JavaScript is required to browse the catalog and upstream links. Full version and branch metadata remains in the JSON API.
 It shares the exact local Geist design tokens, components, responsive shell and theme preference with [SCAD AI IDE](https://peterisdev42.github.io/scad-ai-ide/). No client-side router, external CDN or frontend framework is required. The build stages the same pinned Geist 1.4.2 font package and publishes its original license. See [design-system provenance](web/geist/README.md).
 
 After generating the registry locally:
@@ -74,6 +73,25 @@ The publishing workflow validates the catalog, typechecks, runs tests, fetches
 fresh GitHub/Codeberg data, validates the generated registry, and deploys
 `dist/` only when every step succeeds. Builds fail on incomplete synchronization;
 there is no automatic partial publish and no scheduled refresh.
+
+## Search and AI discovery
+
+The static build emits a canonical HTML catalog with stable library anchors,
+Dataset and ItemList JSON-LD, Open Graph metadata, a sitemap, a concise
+`llms.txt` and a complete `llms-full.txt` catalog/API guide. All library
+descriptions, licensing and version facts come from the same validated registry
+snapshot. No separate hand-maintained library lists, fake reviews or claims of
+search ranking are used.
+
+- https://peterisdev42.github.io/scad-registry/sitemap.xml
+- https://peterisdev42.github.io/scad-registry/llms.txt
+- https://peterisdev42.github.io/scad-registry/llms-full.txt
+
+Submit the sitemap via Google Search Console when the site owner has verified
+the property. GitHub project Pages shares the origin with other projects:
+crawler robots.txt must be served at the origin root, not under /scad-registry/.
+The build does not modify the shared root or set policies for other projects.
+llms.txt is an optional discovery convention, not a ranking guarantee.
 
 ## Catalog and output
 

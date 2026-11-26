@@ -1,122 +1,33 @@
-// Match the IDE's sticky-header offset without extra space.
+// Progressive enhancement: all library content is in the initial HTML.
 const header = document.querySelector(".site-header");
 const updateHeader = () => document.documentElement.style.setProperty("--header-height", header.getBoundingClientRect().height + "px");
 updateHeader();
 if ("ResizeObserver" in window) new ResizeObserver(updateHeader).observe(header);
 else window.addEventListener("resize", updateHeader);
 const searchInput = document.querySelector("#library-search");
-const grid = document.querySelector("#library-grid");
-const status = document.querySelector("#status-message");
+const cards = [...document.querySelectorAll("#library-grid > .library-card")];
 const empty = document.querySelector("#empty-state");
 const count = document.querySelector("#result-count");
-let libraries = [];
-
-function element(tag, className, value) {
-  const node = document.createElement(tag);
-  if (className) node.className = className;
-  if (value !== undefined && value !== null) node.textContent = String(value);
-  return node;
-}
-
-function externalLink(url, label) {
-  if (typeof url !== "string") return null;
-  let parsed;
-  try { parsed = new URL(url); } catch { return null; }
-  if (parsed.protocol !== "https:") return null;
-  const link = element("a", "", label);
-  link.href = parsed.href;
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
-  return link;
-}
-
-function cardFor(library) {
-  const card = element("article", "library-card");
-
-  const heading = element("div", "card-heading");
-  const title = element("h3", "card-title", library.name);
-  const subtitle = element("div", "card-subtitle", library.id);
-  heading.append(title, subtitle);
-
-  const description = element("p", "card-description", library.description);
-  const metadata = element("div", "card-metadata");
-  metadata.append(element("span", "geist-badge", library.license));
-  if (library.latestVersion) {
-    const latest = element("span", "geist-badge geist-badge--info", library.latestVersion);
-    latest.title = "Latest stable version: " + library.latestVersion;
-    metadata.append(latest);
-  }
-  if (library.sync && library.sync.status !== "ok") {
-    metadata.append(element("span", "geist-badge geist-badge--warning", library.sync.status === "stale" ? "Cached metadata" : "Sync unavailable"));
-  }
-
-  const actions = element("div", "card-actions");
-  const documentation = externalLink(library.documentationUrl, "Documentation");
-  if (documentation) {
-    documentation.className = "geist-button geist-button--small card-documentation";
-    actions.append(documentation);
-  }
-  const repository = externalLink(library.repositoryUrl, "Repository");
-  if (repository) {
-    repository.className = "geist-button geist-button--small card-repository";
-    actions.append(repository);
-  }
-
-  const footer = element("div", "card-footer");
-  footer.append(metadata, actions);
-  card.append(heading, description, element("div", "card-divider"), footer);
-  return card;
-}
-
+searchInput.disabled = false;
 function render() {
   const term = searchInput.value.trim().toLocaleLowerCase();
-  const matches = libraries.filter((library) =>
-    [library.name, library.id, library.description, library.license]
-      .some((field) => String(field || "").toLocaleLowerCase().includes(term))
-  );
-  const fragment = document.createDocumentFragment();
-  for (const library of matches) fragment.append(cardFor(library));
-  grid.replaceChildren(fragment);
-  empty.hidden = matches.length !== 0;
-  count.textContent = matches.length === libraries.length
-    ? libraries.length + (libraries.length === 1 ? " library" : " libraries")
-    : matches.length + " of " + libraries.length + " libraries";
-}
-
-function showFailure(message) {
-  status.hidden = false;
-  status.classList.add("is-error");
-  status.textContent = message;
-  count.textContent = "Unavailable";
-}
-
-async function loadRegistry() {
-  try {
-    const response = await fetch("./registry.json", { cache: "no-cache" });
-    if (!response.ok) throw new Error("HTTP " + response.status);
-    const registry = await response.json();
-    if (!registry || !Array.isArray(registry.libraries)) throw new Error("Unexpected registry format");
-    libraries = registry.libraries
-      .slice()
-      .sort((a, b) => a.name.localeCompare(b.name, "en", { sensitivity: "base" }));
-    status.hidden = true;
-    render();
-  } catch (error) {
-    console.error("Unable to load SCAD Registry:", error);
-    showFailure("Unable to load the library catalog. Please check the Registry JSON.");
+  let matches = 0;
+  for (const card of cards) {
+    const visible = card.dataset.search.toLocaleLowerCase().includes(term);
+    card.hidden = !visible;
+    if (visible) matches++;
   }
+  empty.hidden = matches !== 0;
+  count.textContent = matches === cards.length
+    ? cards.length + (cards.length === 1 ? " library" : " libraries")
+    : matches + " of " + cards.length + " libraries";
 }
-
-searchInput.addEventListener("input", () => {
-  if (status.hidden) render();
-});
-
+searchInput.addEventListener("input", render);
 window.addEventListener("keydown", (event) => {
   if (event.key !== "/" || event.ctrlKey || event.metaKey || event.altKey) return;
   const active = document.activeElement;
-  if (active && ["INPUT", "TEXTAREA"].includes(active.tagName)) return;
+  if (active && (["INPUT", "TEXTAREA"].includes(active.tagName) || active.isContentEditable)) return;
   event.preventDefault();
   searchInput.focus();
 });
-
-loadRegistry();
+render();

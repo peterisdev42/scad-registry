@@ -94,3 +94,6 @@
   .library-card { padding: var(--space-20); }
   .status-message,.empty-state { margin-inline: var(--space-20); }
 }
+
+.faq-items { padding: 0 var(--space-40) var(--space-40); }
+@media (max-width: 680px) { .faq-items { padding: 0 var(--space-20) var(--space-20); } }

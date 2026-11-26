@@ -6,7 +6,24 @@
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#ffffff">
   <meta name="description" content="Making OpenSCAD libraries easier to discover, install, and manage. Browse commit-pinned library metadata for SCAD AI IDE and other tools.">
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
   <meta property="og:type" content="website">
+  <meta property="og:site_name" content="SCAD Registry">
+  <meta property="og:description" content="Discover curated OpenSCAD libraries, licenses and commit-pinned version metadata.">
+  <meta property="og:image" content="https://peterisdev42.github.io/scad-registry/assets/og-card.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="SCAD Registry — OpenSCAD library catalog, commit-pinned metadata.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://peterisdev42.github.io/scad-registry/assets/og-card.png">
+  <meta name="twitter:image:alt" content="SCAD Registry — OpenSCAD library catalog.">
+  <meta name="twitter:title" content="SCAD Registry — OpenSCAD Library Catalog">
+  <meta name="twitter:description" content="Discover curated OpenSCAD libraries, licenses and commit-pinned version metadata.">
+  <link rel="describedby" href="./llms.txt" type="text/plain">
+  <link rel="alternate" href="./registry.json" type="application/json" title="SCAD Registry JSON">
+  <link rel="sitemap" href="./sitemap.xml" type="application/xml">
+  <!-- REGISTRY_JSON_LD -->
   <meta property="og:title" content="SCAD Registry — OpenSCAD Libraries">
   <meta property="og:url" content="https://peterisdev42.github.io/scad-registry/">
   <link rel="canonical" href="https://peterisdev42.github.io/scad-registry/">
@@ -16,7 +33,7 @@
   <link rel="stylesheet" href="./geist/index.css">
   <link rel="stylesheet" href="./styles.css">
   <script type="module" src="./app.js"></script>
-  <title>SCAD Registry — OpenSCAD Libraries</title>
+  <title>SCAD Registry — OpenSCAD Library Catalog</title>
 </head>
 <body>
   <a class="skip-link" href="#libraries">Skip to libraries</a>
@@ -58,21 +75,26 @@
       <div class="catalog-toolbar">
         <label class="search-box" for="library-search">
           <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" stroke-width="1.9"/><path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
-          <input id="library-search" type="search" placeholder="Search libraries..." autocomplete="off" aria-label="Search libraries">
+          <input id="library-search" type="search" placeholder="Search libraries..." autocomplete="off" aria-label="Search libraries" disabled>
           <kbd aria-hidden="true">/</kbd>
         </label>
-        <span class="result-count" id="result-count" aria-live="polite">Loading catalog…</span>
+        <span class="result-count" id="result-count" aria-live="polite"><!-- REGISTRY_COUNT --></span>
       </div>
-      <p class="status-message" id="status-message" role="status">Loading libraries…</p>
-      <div class="library-grid" id="library-grid"></div>
+      <noscript><p class="qualification">All libraries and links are available below. Enable JavaScript to filter the catalog.</p></noscript>
+      <div class="library-grid" id="library-grid"><!-- REGISTRY_CARDS --></div>
       <p class="empty-state" id="empty-state" hidden>No libraries match your search.</p>
     </section>
     <section class="chapter" id="integration">
       <div class="chapter-heading"><span class="eyebrow">DEVELOPMENT WORKFLOW</span><h2>From discovery to your workspace.</h2><p>SCAD Registry supplies version metadata to the SCAD AI IDE Library Manager. Discover libraries, select exact tags or snapshots and restore project dependencies in VS Code.</p><a class="text-link" href="https://peterisdev42.github.io/scad-ai-ide/#library-management">Explore library management in SCAD AI IDE</a></div>
       <div class="three-grid"><article><h3>Discover</h3><p>Browse curated OpenSCAD library descriptions, licenses and upstream documentation.</p></article><article><h3>Resolve</h3><p>Use indexed tags or snapshots with commit-pinned download URLs.</p></article><article><h3>Install</h3><p>Manage project dependencies through SCAD AI IDE. The Registry itself does not install software.</p></article></div>
     </section>
+    <section class="chapter" id="registry-api">
+      <div class="chapter-heading"><span class="eyebrow">MACHINE-READABLE DATA</span><h2>Commit-pinned library metadata.</h2><p>Read the versioned registry JSON to resolve exact GitHub or Codeberg source archives. The catalog lists curated libraries, not every OpenSCAD library. Each upstream project retains its own license.</p><a class="text-link" href="./registry.json">Registry JSON API</a> · <a class="text-link" href="./llms-full.txt">Catalog and API guide</a></div>
+      <div class="three-grid"><article><h3>Discover</h3><p>Read name, ID, description, license, repository and documentation URLs.</p></article><article><h3>Resolve</h3><p>Use versions and commit-pinned download URLs; latestVersion may be null. Do not infer the latest stable version from array order.</p></article><article><h3>Check</h3><p>Inspect sync.status and generatedAt. Metadata is not compatibility certification, dependency resolution or installation.</p></article></div>
+    </section>
+    <section class="chapter" id="faq"><div class="chapter-heading"><span class="eyebrow">QUESTIONS &amp; ANSWERS</span><h2>Frequently asked questions.</h2></div><div class="faq-items"><!-- REGISTRY_FAQ --></div></section>
     <section class="chapter closing" id="open-source"><h2>Build with OpenSCAD.</h2><p>Independent, open source and built for the OpenSCAD community.</p><a class="geist-button geist-button--primary geist-button--text" href="https://peterisdev42.github.io/scad-ai-ide/">Explore SCAD AI IDE</a></section>
   </main>
-  <footer class="site-footer"><div class="container footer-inner"><strong>SCAD Registry</strong><div class="footer-links"><a href="#libraries">Libraries</a><a href="#integration">Integration</a><a href="./registry.json">Registry JSON</a><a href="https://peterisdev42.github.io/scad-ai-ide/">SCAD AI IDE</a><a href="https://openscad.org/libraries.html">OpenSCAD</a><a href="https://github.com/peterisdev42/scad-registry">Source</a><a href="https://github.com/peterisdev42/scad-registry/blob/main/LICENSE">License</a></div><p>Independent community project · Not affiliated with OpenSCAD or Microsoft.</p></div></footer>
+  <footer class="site-footer"><div class="container footer-inner"><strong>SCAD Registry</strong><div class="footer-links"><a href="#libraries">Libraries</a><a href="#integration">Integration</a><a href="#registry-api">API</a><a href="#faq">FAQ</a><a href="./registry.json">Registry JSON</a><a href="./llms.txt">LLM guide</a><a href="./llms-full.txt">Catalog guide</a><a href="./sitemap.xml">Sitemap</a><a href="https://peterisdev42.github.io/scad-ai-ide/">SCAD AI IDE</a><a href="https://openscad.org/libraries.html">OpenSCAD</a><a href="https://github.com/peterisdev42/scad-registry">Source</a><a href="https://github.com/peterisdev42/scad-registry/blob/main/LICENSE">License</a></div><p>Independent community project · Not affiliated with OpenSCAD or Microsoft.</p></div></footer>
 </body>
 </html>

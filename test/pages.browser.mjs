@@ -76,7 +76,9 @@ test('Registry published page: shared theme, links, static cards and search', {t
             const style=getComputedStyle(button),rect=button.getBoundingClientRect();
             const range=document.createRange();range.selectNodeContents(button);
             const text=range.getBoundingClientRect();
-            if(style.display!=='inline-flex'||style.alignItems!=='center'||style.justifyContent!=='center'||style.textAlign!=='center')issues.push(id+' button alignment styles');
+            // CSS blockifies inline-flex children of a flex container to flex.
+            // Both computed forms preserve the same inner flex layout.
+            if(!['flex','inline-flex'].includes(style.display)||style.alignItems!=='center'||style.justifyContent!=='center'||style.textAlign!=='center')issues.push({id,button:button.textContent,display:style.display,alignItems:style.alignItems,justifyContent:style.justifyContent,textAlign:style.textAlign});
             if(!near((rect.left+rect.right)/2,(text.left+text.right)/2,2)||!near((rect.top+rect.bottom)/2,(text.top+text.bottom)/2,3))issues.push(id+' '+button.textContent+' text not centered');
             if(rect.left<fr.left-1||rect.right>fr.right+1)issues.push(id+' button overflow');
           }

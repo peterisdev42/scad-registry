@@ -26,6 +26,8 @@ test('buildSite bundles shared Geist, preserves registry bytes and links to IDE'
   const output=await readdir(join(root,'dist'));
   assert.equal(await readFile(join(root,'dist','registry.json'),'utf8'),registry);
   const html=await readFile(join(root,'dist','index.html'),'utf8');
+  assert.equal(html.split('<script defer src="https://cloud.umami.is/script.js" data-website-id="8b733577-948c-4d00-a61f-d59984ad88f3"></script>').length,2);
+  assert.equal((html.match(/cloud\.umami\.is/g)||[]).length,1);
   assert.match(html,/<html lang="en" data-theme="light">/);
   assert.equal((html.match(/rel="stylesheet"/g)||[]).length,1);
   assert.ok((html.match(/href="https:\/\/peterisdev42\.github\.io\/scad-ai-ide\//g)||[]).length>=3);

@@ -24,6 +24,7 @@ test('Registry published page: shared theme, links, static cards and search', {t
   try{
     browser=await chromium.launch({headless:true});
     const context=await browser.newContext({viewport:{width:1440,height:960},colorScheme:'dark'});
+    await context.route('https://cloud.umami.is/script.js',route=>route.fulfill({contentType:'application/javascript',body:'/* Analytics stub for CI */'}));
     const page=await context.newPage(), errors=[], requests=[];
     page.on('request',request=>requests.push(request.url()));
     page.on('pageerror',e=>errors.push(String(e)));
